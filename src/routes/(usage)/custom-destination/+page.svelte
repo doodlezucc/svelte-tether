@@ -11,18 +11,17 @@
 <Heading title="Custom Destination" />
 
 <p>
-	The <code>Destination</code> component is used by the <code>PortalOverlay</code> component to mount
-	snippets to the "top layer" of the document.
+	Portals, by default, mount your snippet to the <code>PortalOverlay</code> component at the "top layer"
+	of the document.
 </p>
 
 <p>
-	You can use <code>Destination</code> yourself and <b>bind it</b> (using
-	<code>bind:this</code>) to act as a destination for your portals.
+	But you can also configure the <code>destination</code> property on a <code>Portal</code> to point
+	to <b>any other element</b>.
 </p>
 
 <p>
-	For example, the following outlined rectangles are plain <code>div</code> elements, each with a
-	bound <code>Destination</code> component placed inside.
+	For example, the following outlined rectangles are plain <code>div</code> elements.
 </p>
 
 <BoundDestination {useDestinationB} />

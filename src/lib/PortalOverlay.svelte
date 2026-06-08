@@ -1,6 +1,5 @@
 <script lang="ts" module>
 	import { getContext } from 'svelte';
-	import type { IDestination } from './Destination.svelte';
 
 	const OVERLAY_CONTEXT_KEY = 'portal-overlay';
 
@@ -9,7 +8,7 @@
 	}
 
 	export interface OverlayContext {
-		destination: IDestination;
+		destination: Element;
 		mountModal(): MountedModal;
 	}
 
@@ -24,7 +23,6 @@
 
 <script lang="ts">
 	import { setContext, type Snippet } from 'svelte';
-	import Destination from './Destination.svelte';
 
 	interface Props {
 		/**
@@ -38,14 +36,12 @@
 
 	let { zIndex = 10, children }: Props = $props();
 
-	let destination = $state<Destination>();
+	let destination = $state<Element>();
 	let modals = $state.raw<MountedModal[]>([]);
 
 	setContext<OverlayContext>(OVERLAY_CONTEXT_KEY, {
-		destination: {
-			mountPortal(snippet) {
-				return destination!.mountPortal(snippet);
-			}
+		get destination() {
+			return destination!;
 		},
 		mountModal() {
 			const mountedModal: MountedModal = {
@@ -64,9 +60,7 @@
 	});
 </script>
 
-<div class="overlay" style:--overlay-z-index={zIndex}>
-	<Destination bind:this={destination} />
-</div>
+<div class="overlay" style:--overlay-z-index={zIndex} bind:this={destination}></div>
 
 {@render children(overlayState)}
 
