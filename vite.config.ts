@@ -8,7 +8,6 @@ export default defineConfig({
 		include: [
 			'@lucide/svelte/icons/chevron-down',
 			'@lucide/svelte/icons/clipboard',
-			'@lucide/svelte/icons/github',
 			'@lucide/svelte/icons/menu',
 			'@lucide/svelte/icons/moon',
 			'@lucide/svelte/icons/send-to-back',

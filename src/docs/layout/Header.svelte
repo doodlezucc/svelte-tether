@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import GitHubIcon from '@lucide/svelte/icons/github';
 	import MoonIcon from '@lucide/svelte/icons/moon';
 	import SendToBackIcon from '@lucide/svelte/icons/send-to-back';
 	import SunIcon from '@lucide/svelte/icons/sun';
@@ -8,6 +7,7 @@
 	import IconButton from '../IconButton.svelte';
 	import Tooltip from '../Tooltip.svelte';
 	import { persisted } from '../persisted-state.svelte.js';
+	import GitHubIcon from './svg-icons/GitHubIcon.svelte';
 
 	type Theme = 'light' | 'dark';
 	const theme = persisted<Theme | null>('dark-mode', null);
