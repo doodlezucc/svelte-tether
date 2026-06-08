@@ -1,5 +1,4 @@
 import adapter from '@sveltejs/adapter-static';
-import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import MagicString from 'magic-string';
 import * as nodeFs from 'node:fs';
 import * as nodePath from 'node:path';
@@ -7,7 +6,12 @@ import { createHighlighter } from 'shiki';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-	preprocess: [vitePreprocess(), shikiPreprocess()],
+	compilerOptions: {
+		// Force runes mode for the project, except for libraries. Can be removed in svelte 6.
+		runes: ({ filename }) => (filename.split(/[/\\]/).includes('node_modules') ? undefined : true)
+	},
+
+	preprocess: [shikiPreprocess()],
 
 	kit: {
 		// Adapted for GitHub Pages - https://svelte.dev/docs/kit/adapter-static#GitHub-Pages
