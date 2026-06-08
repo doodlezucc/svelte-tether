@@ -1,13 +1,14 @@
 <script lang="ts">
-	import { base } from '$app/paths';
+	import { resolve } from '$app/paths';
+	import type { Pathname } from '$app/types';
 	import type { Snippet } from 'svelte';
 
 	interface Props {
-		path: string;
+		path: Pathname;
 		children: Snippet;
 	}
 
 	let { path, children }: Props = $props();
 </script>
 
-<a href="{base}{path}">{@render children()}</a>
+<a href={resolve(path)}>{@render children()}</a>

@@ -73,7 +73,12 @@
 
 <p><b>Click and drag</b> in the area below to see this in action.</p>
 
-<div class="outer-boundary" bind:this={outerBoundary} onpointerdown={onPointerDown}>
+<div
+	class="outer-boundary"
+	bind:this={outerBoundary}
+	onpointerdown={onPointerDown}
+	role="presentation"
+>
 	<TetherBoundary>
 		<div class="boundary">
 			<span class="boundary-header">{'<TetherBoundary>'}</span>
