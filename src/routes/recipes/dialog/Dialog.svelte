@@ -41,7 +41,6 @@
 
 		display: grid;
 		place-content: center;
-		pointer-events: all;
 	}
 
 	h1 {

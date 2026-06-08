@@ -90,7 +90,6 @@
 		outline: 1px solid black;
 		margin: 0 1px;
 		padding-inline-start: 0;
-		pointer-events: all;
 	}
 
 	[role='option'] {

@@ -80,4 +80,8 @@
 		height: 100%;
 		pointer-events: none;
 	}
+
+	.overlay > :global(*) {
+		pointer-events: all;
+	}
 </style>

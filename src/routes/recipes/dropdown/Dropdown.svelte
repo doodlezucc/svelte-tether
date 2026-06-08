@@ -133,7 +133,6 @@
 	[role='listbox'] {
 		margin: 0;
 		padding-inline-start: 0;
-		pointer-events: all;
 		background: scheme.color('background');
 		border: 1px solid scheme.color('shade-3');
 		border-radius: 8px;

@@ -25,6 +25,8 @@
 
 <style>
 	[role='tooltip'] {
+		pointer-events: none;
+
 		padding: 4px 12px;
 		background-color: black;
 		color: white;
