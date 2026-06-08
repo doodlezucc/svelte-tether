@@ -40,7 +40,7 @@
 		"@fontsource-variable/montserrat": "^5.2.8",
 		"@fontsource-variable/roboto-mono": "^5.2.9",
 		"@fontsource/merriweather": "^5.2.11",
-		"@lucide/svelte": "^0.488.0",
+		"@lucide/svelte": "^1.17.0",
 		"@sveltejs/adapter-static": "^3.0.10",
 		"@sveltejs/kit": "^2.63.0",
 		"@sveltejs/package": "^2.5.8",
