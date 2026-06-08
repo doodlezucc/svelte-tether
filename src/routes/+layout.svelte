@@ -1,8 +1,9 @@
 <script lang="ts">
 	import '$docs/style/index.scss';
-	import '@fontsource-variable/montserrat';
-	import '@fontsource-variable/roboto-mono';
-	import '@fontsource/merriweather';
+	import '@fontsource-variable/montserrat/wght.css';
+	import '@fontsource-variable/roboto-mono/wght.css';
+	import '@fontsource/merriweather/400.css';
+	import '@fontsource/merriweather/700.css';
 
 	import Content from '$docs/layout/Content.svelte';
 	import Header from '$docs/layout/Header.svelte';
