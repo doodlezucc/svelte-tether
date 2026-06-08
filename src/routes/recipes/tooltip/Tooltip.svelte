@@ -26,6 +26,7 @@
 <style>
 	[role='tooltip'] {
 		pointer-events: none;
+		user-select: none;
 
 		padding: 4px 12px;
 		background-color: black;
