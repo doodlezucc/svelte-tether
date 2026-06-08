@@ -1,4 +1,5 @@
 import adapter from '@sveltejs/adapter-static';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import MagicString from 'magic-string';
 import * as nodeFs from 'node:fs';
 import * as nodePath from 'node:path';
@@ -11,7 +12,7 @@ const config = {
 		runes: ({ filename }) => (filename.split(/[/\\]/).includes('node_modules') ? undefined : true)
 	},
 
-	preprocess: [shikiPreprocess()],
+	preprocess: [vitePreprocess(), shikiPreprocess()],
 
 	kit: {
 		// Adapted for GitHub Pages - https://svelte.dev/docs/kit/adapter-static#GitHub-Pages
