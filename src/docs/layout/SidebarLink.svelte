@@ -1,16 +1,17 @@
 <script lang="ts">
-	import { base } from '$app/paths';
+	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
+	import type { Pathname } from '$app/types';
 	import type { Snippet } from 'svelte';
 
 	interface Props {
-		path: string;
+		path: Pathname;
 		children: Snippet;
 	}
 
 	let { path, children }: Props = $props();
 
-	let href = $derived(`${base}${path}`);
+	let href = $derived(resolve(path));
 	let isCurrentPage = $derived(href === page.url.pathname);
 </script>
 

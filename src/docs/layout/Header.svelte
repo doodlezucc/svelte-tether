@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { base } from '$app/paths';
+	import { resolve } from '$app/paths';
 	import GitHubIcon from '@lucide/svelte/icons/github';
 	import MoonIcon from '@lucide/svelte/icons/moon';
 	import SendToBackIcon from '@lucide/svelte/icons/send-to-back';
@@ -32,7 +32,7 @@
 </script>
 
 <header data-theme={theme.value ?? undefined}>
-	<a class="logo" href="{base}/">
+	<a class="logo" href={resolve('/')}>
 		<SendToBackIcon />
 		Svelte Tether
 	</a>
