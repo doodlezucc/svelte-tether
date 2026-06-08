@@ -36,8 +36,11 @@ export default defineConfig(
 		}
 	},
 	{
-		// Override or add rule settings here, such as:
-		// 'svelte/button-has-type': 'error'
-		rules: {}
+		// The documentation pages use syntax like {'<TetherBoundary>'} in text to prevent
+		// interpreting the string as a HTML tag.
+		files: ['src/routes/**/*'],
+		rules: {
+			'svelte/no-useless-mustaches': 'off'
+		}
 	}
 );
