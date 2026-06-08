@@ -1,14 +1,9 @@
 <script lang="ts" module>
 	import type { Snippet } from 'svelte';
+	import SnippetRenderer from './SnippetRenderer.svelte';
 
-	export class MountedPortal {
-		readonly snippet: Snippet;
-		readonly unmount: () => void;
-
-		constructor(snippet: Snippet, unmount: () => void) {
-			this.snippet = snippet;
-			this.unmount = unmount;
-		}
+	export interface MountedPortal {
+		unmount(): void;
 	}
 
 	export interface IDestination {
@@ -17,19 +12,21 @@
 </script>
 
 <script lang="ts">
-	let mountedPortals = $state<MountedPortal[]>([]);
+	import { mount, unmount } from 'svelte';
+
+	let element = $state<Element>();
 
 	export function mountPortal(snippet: Snippet): MountedPortal {
-		const portal = new MountedPortal(snippet, () => {
-			mountedPortals = mountedPortals.filter((somePortal) => somePortal !== portal);
-		});
+		if (!element) {
+			throw new Error('Destination element not mounted yet');
+		}
 
-		mountedPortals.push(portal);
+		const mountedComponent = mount(SnippetRenderer, { props: { snippet }, target: element });
 
-		return portal;
+		return {
+			unmount: () => unmount(mountedComponent, { outro: true })
+		};
 	}
 </script>
 
-{#each mountedPortals as portal (portal)}
-	{@render portal.snippet()}
-{/each}
+<div bind:this={element} style:display="contents"></div>
