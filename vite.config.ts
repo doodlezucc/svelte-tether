@@ -4,6 +4,18 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
 	plugins: [sveltekit()],
+	optimizeDeps: {
+		include: [
+			'@lucide/svelte/icons/chevron-down',
+			'@lucide/svelte/icons/clipboard',
+			'@lucide/svelte/icons/github',
+			'@lucide/svelte/icons/menu',
+			'@lucide/svelte/icons/moon',
+			'@lucide/svelte/icons/send-to-back',
+			'@lucide/svelte/icons/sun',
+			'@lucide/svelte/icons/x'
+		]
+	},
 	test: {
 		expect: { requireAssertions: true },
 		projects: [
