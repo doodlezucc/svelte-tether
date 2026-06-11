@@ -1,11 +1,15 @@
 <script lang="ts">
-	import { untrack, type Snippet } from 'svelte';
-	import type { IDestination } from './Destination.svelte';
+	import { mount, unmount, untrack, type Snippet } from 'svelte';
 	import { useOverlay } from './PortalOverlay.svelte';
+	import SnippetRenderer from './SnippetRenderer.svelte';
 
 	interface Props {
 		modal?: boolean;
-		destination?: IDestination;
+
+		/**
+		 * The DOM element to mount this snippet in. Defaults to the `<PortalOverlay>`.
+		 */
+		destination?: Element;
 		children: Snippet;
 	}
 
@@ -15,12 +19,14 @@
 	let usedDestination = $derived(destination ?? overlay.destination);
 
 	$effect(() => {
-		// Without "untrack", infinite recursion would occur when used by the Tether component.
 		const destination = usedDestination;
-		const mountedPortal = untrack(() => destination.mountPortal(children));
+		const mountedComponent = mount(SnippetRenderer, {
+			props: { snippet: children },
+			target: destination
+		});
 
 		return () => {
-			mountedPortal.unmount();
+			unmount(mountedComponent, { outro: true });
 		};
 	});
 

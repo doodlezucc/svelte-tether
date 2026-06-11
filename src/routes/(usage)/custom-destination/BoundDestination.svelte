@@ -1,21 +1,17 @@
 <script lang="ts">
-	import { Destination, Portal } from 'svelte-tether';
+	import { Portal } from 'svelte-tether';
 
 	let { useDestinationB }: { useDestinationB: boolean } = $props();
 
-	let destinationA = $state<Destination>();
-	let destinationB = $state<Destination>();
+	let destinationA = $state<Element>();
+	let destinationB = $state<Element>();
 
 	let currentDestination = $derived(useDestinationB ? destinationB : destinationA);
 </script>
 
 <div class="destinations">
-	<div>
-		<Destination bind:this={destinationA} />
-	</div>
-	<div>
-		<Destination bind:this={destinationB} />
-	</div>
+	<div bind:this={destinationA}></div>
+	<div bind:this={destinationB}></div>
 </div>
 
 {#if currentDestination}

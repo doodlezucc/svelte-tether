@@ -25,6 +25,9 @@
 	@use '$docs/style/scheme';
 
 	[role='tooltip'] {
+		pointer-events: none;
+		user-select: none;
+
 		padding: 4px 12px;
 		background-color: scheme.color('tooltip-background');
 		color: scheme.color('tooltip-text');
