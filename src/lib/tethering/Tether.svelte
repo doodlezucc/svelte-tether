@@ -1,30 +1,5 @@
 <script lang="ts" module>
-	export type Alignment = keyof typeof ALIGNMENT_MAPPING;
-
-	const TOP = 0;
-	const LEFT = 0;
-	const BOTTOM = 1;
-	const RIGHT = 1;
-	const CENTER = 0.5;
-
-	const ALIGNMENT_MAPPING = {
-		'top-left': [LEFT, TOP],
-		'top-center': [CENTER, TOP],
-		'top-right': [RIGHT, TOP],
-		'center-left': [LEFT, CENTER],
-		center: [CENTER, CENTER],
-		'center-right': [RIGHT, CENTER],
-		'bottom-left': [LEFT, BOTTOM],
-		'bottom-center': [CENTER, BOTTOM],
-		'bottom-right': [RIGHT, BOTTOM]
-	};
-
 	export type SizeInheritMode = boolean | 'constrain';
-
-	export interface TetherState {
-		isMirroredHorizontally: boolean;
-		isMirroredVertically: boolean;
-	}
 </script>
 
 <script lang="ts">
@@ -32,6 +7,7 @@
 	import Portal from '../portaling/Portal.svelte';
 	import { useAnimationFrame } from '../util/animation-frame.svelte.ts';
 	import { useTetherBoundary } from './TetherBoundary.svelte';
+	import { computeTetherLayout, type Alignment, type TetherState } from './tether-layout.ts';
 
 	export interface TetherProps {
 		origin: Alignment;
@@ -83,45 +59,20 @@
 	let childWidth = $state(0);
 	let childHeight = $state(0);
 
-	let minX = $derived(!boundary ? Number.NEGATIVE_INFINITY : boundary.left);
-	let minY = $derived(!boundary ? Number.NEGATIVE_INFINITY : boundary.top);
-	let maxX = $derived(!boundary ? Number.POSITIVE_INFINITY : boundary.right - childWidth);
-	let maxY = $derived(!boundary ? Number.POSITIVE_INFINITY : boundary.bottom - childHeight);
-
-	let originHorizontal = $derived(ALIGNMENT_MAPPING[origin][0]);
-	let originVertical = $derived(ALIGNMENT_MAPPING[origin][1]);
-
-	let alignHorizontal = $derived(ALIGNMENT_MAPPING[direction][0]);
-	let alignVertical = $derived(ALIGNMENT_MAPPING[direction][1]);
-
-	let childXUnclamped = $derived(
-		!rect ? 0 : rect.x + originHorizontal * rect.width - childWidth * (1 - alignHorizontal)
+	const layout = $derived(
+		rect
+			? computeTetherLayout({
+					origin,
+					direction,
+					wrapHorizontal,
+					wrapVertical,
+					boundary,
+					portalWidth: childWidth,
+					portalHeight: childHeight,
+					anchor: rect
+				})
+			: undefined
 	);
-	let childYUnclamped = $derived(
-		!rect ? 0 : rect.y + originVertical * rect.height - childHeight * (1 - alignVertical)
-	);
-
-	let wrapLeftToRight = $derived(alignHorizontal === LEFT && childXUnclamped - minX < 0);
-	let wrapRightToLeft = $derived(alignHorizontal === RIGHT && maxX - childXUnclamped < 0);
-	let wrapTopToBottom = $derived(alignVertical === TOP && childYUnclamped - minY < 0);
-	let wrapBottomToTop = $derived(alignVertical === BOTTOM && maxY - childYUnclamped < 0);
-
-	let applyMirrorHorizontal = $derived(wrapHorizontal && (wrapLeftToRight || wrapRightToLeft));
-	let applyMirrorVertical = $derived(wrapVertical && (wrapBottomToTop || wrapTopToBottom));
-
-	let childXWrappedUnclamped = $derived(
-		!applyMirrorHorizontal || !rect
-			? childXUnclamped
-			: rect.x + (1 - originHorizontal) * rect.width - childWidth * alignHorizontal
-	);
-	let childYWrappedUnclamped = $derived(
-		!applyMirrorVertical || !rect
-			? childYUnclamped
-			: rect.y + (1 - originVertical) * rect.height - childHeight * alignVertical
-	);
-
-	let childX = $derived(Math.min(Math.max(childXWrappedUnclamped, minX), maxX));
-	let childY = $derived(Math.min(Math.max(childYWrappedUnclamped, minY), maxY));
 
 	function findValidElement(parent: HTMLElement) {
 		const children = parent.children;
@@ -157,18 +108,12 @@
 		};
 	});
 
-	let tetherState = $derived<TetherState>({
-		isMirroredHorizontally: applyMirrorHorizontal,
-		isMirroredVertically: applyMirrorVertical
-	});
-
-	let style = $derived.by(() => {
-		if (!rect) {
-			return `--x: ${childX}px; --y: ${childY}px`;
-		} else {
-			return `--x: ${childX}px; --y: ${childY}px; --w: ${rect.width}px; --h: ${rect.height}px`;
+	let tetherState = $derived<TetherState>(
+		layout?.state ?? {
+			isMirroredHorizontally: false,
+			isMirroredVertically: false
 		}
-	});
+	);
 </script>
 
 <div data-tether bind:this={referenceWrapper}>
@@ -183,7 +128,10 @@
 			data-inherit-height={inheritHeight || undefined}
 			bind:clientWidth={childWidth}
 			bind:clientHeight={childHeight}
-			{style}
+			style:--x="{layout?.portalX ?? 0}px"
+			style:--y="{layout?.portalY ?? 0}px"
+			style:--w={rect ? `${rect.width}px` : undefined}
+			style:--h={rect ? `${rect.height}px` : undefined}
 		>
 			{@render portal(tetherState)}
 		</div>
