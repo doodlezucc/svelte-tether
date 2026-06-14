@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { mount, unmount, untrack, type Snippet } from 'svelte';
+	import SnippetRenderer from '../util/SnippetRenderer.svelte';
 	import { useOverlay } from './PortalOverlay.svelte';
-	import SnippetRenderer from './util/SnippetRenderer.svelte';
 
 	interface Props {
 		modal?: boolean;

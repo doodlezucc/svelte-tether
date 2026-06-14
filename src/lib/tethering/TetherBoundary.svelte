@@ -16,7 +16,7 @@
 <script lang="ts">
 	import { setContext, type Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { useAnimationFrame } from './util/animation-frame.svelte.ts';
+	import { useAnimationFrame } from '../util/animation-frame.svelte.ts';
 
 	interface Props {
 		ignoreParentBoundary?: boolean;
