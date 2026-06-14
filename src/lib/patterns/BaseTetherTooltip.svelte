@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import type { TetherState } from './Tether.svelte';
+	import type { TetherState } from '../tethering/Tether.svelte';
 
 	interface TooltipState {
 		tooltipId: string;
@@ -14,8 +14,8 @@
 
 <script lang="ts">
 	import { type Snippet } from 'svelte';
-	import type { TetherProps } from './Tether.svelte';
-	import Tether from './Tether.svelte';
+	import type { TetherProps } from '../tethering/Tether.svelte';
+	import Tether from '../tethering/Tether.svelte';
 
 	type Props = Omit<TetherProps, 'children' | 'portal'> & {
 		children: Snippet<[state: BaseTetherTooltipState]>;

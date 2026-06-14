@@ -29,8 +29,8 @@
 
 <script lang="ts">
 	import { onMount, type Snippet } from 'svelte';
-	import { useAnimationFrame } from './animation-frame.svelte.js';
-	import Portal from './Portal.svelte';
+	import Portal from '../portaling/Portal.svelte';
+	import { useAnimationFrame } from '../util/animation-frame.svelte.ts';
 	import { useTetherBoundary } from './TetherBoundary.svelte';
 
 	export interface TetherProps {
