@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { untrack, type Snippet } from 'svelte';
-	import { mountSnippet } from '../util/mount-snippet.ts';
+	import { mountSnippet } from './mount-snippet.ts';
 	import { useOverlay } from './PortalOverlay.svelte';
 
 	interface Props {
