@@ -3,9 +3,13 @@
 </script>
 
 <script lang="ts">
-	import { onMount, type Snippet } from 'svelte';
+	import { type Snippet } from 'svelte';
 	import Portal from '../portaling/Portal.svelte';
 	import { useAnimationFrame } from '../util/animation-frame.svelte.ts';
+	import {
+		createElementSizeMeasurer,
+		SingleElementSizeMeasurer
+	} from '../util/measure-element-size.ts';
 	import { useTetherBoundary } from './TetherBoundary.svelte';
 	import { computeTetherLayout, type Alignment, type TetherState } from './tether-layout.ts';
 
@@ -36,6 +40,7 @@
 		wrapVertical = false,
 		portal,
 		children,
+		// eslint-disable-next-line no-useless-assignment
 		wrappedElement = $bindable()
 	}: TetherProps = $props();
 
@@ -45,9 +50,12 @@
 	let rect = $state<DOMRect>();
 	let boundary = $state<DOMRect>();
 
+	let elementSizeMeasurer: SingleElementSizeMeasurer | undefined;
+
 	useAnimationFrame(() => {
-		if (wrappedElement) {
-			rect = wrappedElement.getBoundingClientRect();
+		if (elementSizeMeasurer) {
+			rect = elementSizeMeasurer.measureRect();
+			wrappedElement = elementSizeMeasurer.wrappedElement;
 		}
 
 		const overlayRect = tetherBoundary?.getRect();
@@ -74,38 +82,15 @@
 			: undefined
 	);
 
-	function findValidElement(parent: HTMLElement) {
-		const children = parent.children;
+	$effect(() => {
+		if (referenceWrapper) {
+			const measurer = createElementSizeMeasurer(referenceWrapper);
+			elementSizeMeasurer = measurer;
 
-		if (children.length !== 1) {
-			wrappedElement = undefined;
-			throw new Error('Tether must have exactly one child element');
+			return () => {
+				measurer.dispose();
+			};
 		}
-
-		const child = children[0] as HTMLElement;
-		if (child.hasAttribute('data-tether')) {
-			return findValidElement(child);
-		} else {
-			return child;
-		}
-	}
-
-	function updateWrappedElement() {
-		wrappedElement = findValidElement(referenceWrapper!);
-	}
-
-	onMount(() => {
-		updateWrappedElement();
-
-		const observer = new MutationObserver(() => {
-			updateWrappedElement();
-		});
-
-		observer.observe(referenceWrapper!, { childList: true, subtree: true });
-
-		return () => {
-			observer.disconnect();
-		};
 	});
 
 	let tetherState = $derived<TetherState>(

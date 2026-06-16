@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import type { TetherState } from '../tethering/Tether.svelte';
+	import type { TetherState } from '../tethering/tether-layout.ts';
 
 	interface TooltipState {
 		tooltipId: string;
