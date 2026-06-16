@@ -6,10 +6,7 @@
 	import { type Snippet } from 'svelte';
 	import Portal from '../portaling/Portal.svelte';
 	import { useAnimationFrame } from '../util/animation-frame.svelte.ts';
-	import {
-		createElementSizeMeasurer,
-		SingleElementSizeMeasurer
-	} from '../util/measure-element-size.ts';
+	import { SingleElementSizeMeasurer } from '../util/measure-element-size.ts';
 	import { useTetherBoundary } from './TetherBoundary.svelte';
 	import { computeTetherLayout, type Alignment, type TetherState } from './tether-layout.ts';
 
@@ -84,7 +81,7 @@
 
 	$effect(() => {
 		if (referenceWrapper) {
-			const measurer = createElementSizeMeasurer(referenceWrapper);
+			const measurer = new SingleElementSizeMeasurer(referenceWrapper);
 			elementSizeMeasurer = measurer;
 
 			return () => {
