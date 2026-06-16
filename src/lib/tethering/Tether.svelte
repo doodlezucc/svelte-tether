@@ -23,9 +23,6 @@
 
 		portal: Snippet<[state: TetherState]>;
 		children: Snippet<[state: TetherState]>;
-
-		/** The wrapped HTML element used as a reference for positioning the portal (read-only). */
-		wrappedElement?: HTMLElement;
 	}
 
 	let {
@@ -37,8 +34,7 @@
 		wrapVertical = false,
 		portal,
 		children,
-		// eslint-disable-next-line no-useless-assignment
-		wrappedElement = $bindable()
+		...attachments
 	}: TetherProps = $props();
 
 	const tetherBoundary = useTetherBoundary();
@@ -52,7 +48,6 @@
 	useAnimationFrame(() => {
 		if (elementSizeMeasurer) {
 			rect = elementSizeMeasurer.measureRect();
-			wrappedElement = elementSizeMeasurer.wrappedElement;
 		}
 
 		const overlayRect = tetherBoundary?.getRect();
@@ -98,7 +93,7 @@
 	);
 </script>
 
-<div data-tether bind:this={referenceWrapper}>
+<div data-tether bind:this={referenceWrapper} {...attachments}>
 	{@render children(tetherState)}
 </div>
 

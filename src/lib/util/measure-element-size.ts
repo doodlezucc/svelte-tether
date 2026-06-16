@@ -8,7 +8,7 @@ export class SingleElementSizeMeasurer implements ElementSizeMeasurer {
 	private readonly mutationObserver: MutationObserver;
 
 	private isSubTreeOutdated = true;
-	#wrappedElement!: HTMLElement;
+	private wrappedElement!: HTMLElement;
 
 	constructor(root: HTMLElement) {
 		this.root = root;
@@ -20,10 +20,6 @@ export class SingleElementSizeMeasurer implements ElementSizeMeasurer {
 		this.refreshWrappedElementIfNeeded();
 	}
 
-	get wrappedElement() {
-		return this.#wrappedElement;
-	}
-
 	dispose() {
 		this.mutationObserver.disconnect();
 	}
@@ -31,13 +27,13 @@ export class SingleElementSizeMeasurer implements ElementSizeMeasurer {
 	measureRect(): DOMRect {
 		this.refreshWrappedElementIfNeeded();
 
-		return this.#wrappedElement.getBoundingClientRect();
+		return this.wrappedElement.getBoundingClientRect();
 	}
 
 	private refreshWrappedElementIfNeeded() {
 		if (!this.isSubTreeOutdated) return;
 
-		this.#wrappedElement = this.findMeasurableDescendant();
+		this.wrappedElement = this.findMeasurableDescendant();
 		this.isSubTreeOutdated = false;
 	}
 

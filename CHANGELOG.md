@@ -1,3 +1,8 @@
+### Unreleased
+
+- **Breaking!** - Raised the `svelte` peer dependency version to `^5.29.0`, which introduced [attachments](https://svelte.dev/docs/svelte/@attach).
+- **Breaking!** - Removed the read-only `wrappedElement` property from the `<Tether>` and `<BaseTetherToolip>` component in favor of attachments.
+
 ### Preview 0.3.0 (2026-06-11)
 
 - **Breaking!** - Removed the `<Destination>` component and the `IDestination` type. Portals with a custom destination must now be configured with an `Element` instead.
