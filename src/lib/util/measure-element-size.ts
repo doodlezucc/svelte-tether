@@ -3,21 +3,20 @@ export interface ElementSizeMeasurer {
 	dispose(): void;
 }
 
-export class SingleElementSizeMeasurer implements ElementSizeMeasurer {
-	private readonly root: HTMLElement;
+class MultiChildSizeMeasurer implements ElementSizeMeasurer {
+	private readonly root: Element;
 	private readonly mutationObserver: MutationObserver;
 
 	private isSubTreeOutdated = true;
-	private wrappedElement!: HTMLElement;
+	private elements: Element[] = [];
 
-	constructor(root: HTMLElement) {
+	constructor(root: Element) {
 		this.root = root;
 		this.mutationObserver = new MutationObserver(() => {
 			this.isSubTreeOutdated = true;
 		});
 
 		this.mutationObserver.observe(root, { childList: true, subtree: true });
-		this.refreshWrappedElementIfNeeded();
 	}
 
 	dispose() {
@@ -25,32 +24,68 @@ export class SingleElementSizeMeasurer implements ElementSizeMeasurer {
 	}
 
 	measureRect(): DOMRect {
-		this.refreshWrappedElementIfNeeded();
+		this.refreshWrappedElementsIfNeeded();
 
-		return this.wrappedElement.getBoundingClientRect();
+		if (this.elements.length === 0) {
+			return new DOMRect();
+		}
+
+		let { left, top, right, bottom } = this.elements[0].getBoundingClientRect();
+
+		for (let i = 1; i < this.elements.length; i++) {
+			const rect = this.elements[i].getBoundingClientRect();
+
+			if (rect.left < left) {
+				left = rect.left;
+			}
+			if (rect.right > right) {
+				right = rect.right;
+			}
+			if (rect.top < top) {
+				top = rect.top;
+			}
+			if (rect.bottom > bottom) {
+				bottom = rect.bottom;
+			}
+		}
+
+		return new DOMRect(left, top, right - left, bottom - top);
 	}
 
-	private refreshWrappedElementIfNeeded() {
+	private refreshWrappedElementsIfNeeded() {
 		if (!this.isSubTreeOutdated) return;
 
-		this.wrappedElement = this.findMeasurableDescendant();
+		this.elements = this.findMeasurableDescendants();
 		this.isSubTreeOutdated = false;
 	}
 
-	private findMeasurableDescendant(parent: HTMLElement = this.root): HTMLElement {
+	private findMeasurableDescendants(parent: Element = this.root): Element[] {
 		const children = parent.children;
+		const measurableDescendants: Element[] = [];
 
-		const htmlElementChildren = [...children].filter((element) => element instanceof HTMLElement);
-
-		if (htmlElementChildren.length !== 1) {
-			throw new Error('Tether must have exactly one child element');
+		for (const child of children) {
+			if (MultiChildSizeMeasurer.isElementMeasurable(child)) {
+				measurableDescendants.push(child);
+			} else {
+				measurableDescendants.push(...this.findMeasurableDescendants(child));
+			}
 		}
 
-		const child = htmlElementChildren[0];
-		if (child.hasAttribute('data-tether')) {
-			return this.findMeasurableDescendant(child);
-		} else {
-			return child;
-		}
+		return measurableDescendants;
 	}
+
+	private static isElementMeasurable(element: Element) {
+		if (element.hasAttribute('data-tether')) return false;
+
+		const cssStyle = getComputedStyle(element);
+		if (cssStyle.display === 'none' || cssStyle.display === 'contents') {
+			return false;
+		}
+
+		return true;
+	}
+}
+
+export function createElementSizeMeasurer(root: HTMLElement) {
+	return new MultiChildSizeMeasurer(root);
 }
