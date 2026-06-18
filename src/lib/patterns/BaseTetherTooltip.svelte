@@ -17,6 +17,7 @@
 	import type { Attachment } from 'svelte/attachments';
 	import type { TetherProps } from '../tethering/Tether.svelte';
 	import Tether from '../tethering/Tether.svelte';
+	import { createMutationObserverAttachment } from '../util/observer-attachment.svelte.ts';
 
 	type Props = Omit<TetherProps, 'children' | 'portal'> & {
 		children: Snippet<[state: BaseTetherTooltipState]>;
@@ -49,22 +50,32 @@
 		isFocused = false;
 	}
 
-	function createEventListenersAttachment(): Attachment<HTMLElement> {
-		return (element) => {
-			element.setAttribute('aria-labelledby', tooltipId);
-			element.addEventListener('pointerenter', onPointerEnter);
-			element.addEventListener('pointerleave', onPointerLeave);
-			element.addEventListener('focus', onFocus);
-			element.addEventListener('blur', onBlur);
+	function getWrappedHTMLElement(tetherWrapper: Element): HTMLElement | null {
+		return [...tetherWrapper.children].find((child) => child instanceof HTMLElement) ?? null;
+	}
 
-			return () => {
-				element.removeAttribute('aria-labelledby');
-				element.removeEventListener('pointerenter', onPointerEnter);
-				element.removeEventListener('pointerleave', onPointerLeave);
-				element.removeEventListener('focus', onFocus);
-				element.removeEventListener('blur', onBlur);
-			};
-		};
+	function createEventListenersAttachment(): Attachment<Element> {
+		return createMutationObserverAttachment({
+			// Only observe mutations to the direct children of the <Tether> wrapper element
+			observerOptions: { childList: true },
+			resolveRelative: getWrappedHTMLElement,
+
+			relativeAttachment: (wrappedElement) => {
+				wrappedElement.setAttribute('aria-labelledby', tooltipId);
+				wrappedElement.addEventListener('pointerenter', onPointerEnter);
+				wrappedElement.addEventListener('pointerleave', onPointerLeave);
+				wrappedElement.addEventListener('focus', onFocus);
+				wrappedElement.addEventListener('blur', onBlur);
+
+				return () => {
+					wrappedElement.removeAttribute('aria-labelledby');
+					wrappedElement.removeEventListener('pointerenter', onPointerEnter);
+					wrappedElement.removeEventListener('pointerleave', onPointerLeave);
+					wrappedElement.removeEventListener('focus', onFocus);
+					wrappedElement.removeEventListener('blur', onBlur);
+				};
+			}
+		});
 	}
 
 	let tooltipState = $derived<TooltipState>({
