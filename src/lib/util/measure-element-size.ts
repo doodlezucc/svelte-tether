@@ -1,56 +1,75 @@
+import {
+	createSparseTreeObserver,
+	TreeElementKind,
+	type SparseTreeObserver
+} from './sparse-tree-observer/sparse-tree-observer.ts';
+
 export interface ElementSizeMeasurer {
 	measureRect(): DOMRect;
 	dispose(): void;
 }
 
-export class SingleElementSizeMeasurer implements ElementSizeMeasurer {
-	private readonly root: HTMLElement;
-	private readonly mutationObserver: MutationObserver;
+class MultiChildSizeMeasurer implements ElementSizeMeasurer {
+	private readonly observer: SparseTreeObserver;
 
-	private isSubTreeOutdated = true;
-	private wrappedElement!: HTMLElement;
-
-	constructor(root: HTMLElement) {
-		this.root = root;
-		this.mutationObserver = new MutationObserver(() => {
-			this.isSubTreeOutdated = true;
+	constructor(root: Element) {
+		this.observer = createSparseTreeObserver({
+			root: root,
+			filterElement: MultiChildSizeMeasurer.getElementMeasurability
 		});
-
-		this.mutationObserver.observe(root, { childList: true, subtree: true });
-		this.refreshWrappedElementIfNeeded();
 	}
 
 	dispose() {
-		this.mutationObserver.disconnect();
+		this.observer.dispose();
 	}
 
 	measureRect(): DOMRect {
-		this.refreshWrappedElementIfNeeded();
+		const elements = [...this.observer.leafs];
 
-		return this.wrappedElement.getBoundingClientRect();
-	}
-
-	private refreshWrappedElementIfNeeded() {
-		if (!this.isSubTreeOutdated) return;
-
-		this.wrappedElement = this.findMeasurableDescendant();
-		this.isSubTreeOutdated = false;
-	}
-
-	private findMeasurableDescendant(parent: HTMLElement = this.root): HTMLElement {
-		const children = parent.children;
-
-		const htmlElementChildren = [...children].filter((element) => element instanceof HTMLElement);
-
-		if (htmlElementChildren.length !== 1) {
-			throw new Error('Tether must have exactly one child element');
+		if (elements.length === 0) {
+			return new DOMRect();
 		}
 
-		const child = htmlElementChildren[0];
-		if (child.hasAttribute('data-tether')) {
-			return this.findMeasurableDescendant(child);
-		} else {
-			return child;
+		let { left, top, right, bottom } = elements[0].getBoundingClientRect();
+
+		for (let i = 1; i < elements.length; i++) {
+			const rect = elements[i].getBoundingClientRect();
+
+			if (rect.left < left) {
+				left = rect.left;
+			}
+			if (rect.right > right) {
+				right = rect.right;
+			}
+			if (rect.top < top) {
+				top = rect.top;
+			}
+			if (rect.bottom > bottom) {
+				bottom = rect.bottom;
+			}
 		}
+
+		return new DOMRect(left, top, right - left, bottom - top);
 	}
+
+	private static getElementMeasurability(element: Element): TreeElementKind {
+		if (element.hasAttribute('data-tether')) {
+			return TreeElementKind.deferToChildren;
+		}
+
+		const cssStyle = getComputedStyle(element);
+		if (cssStyle.display === 'none') {
+			return TreeElementKind.deadLeaf;
+		}
+
+		if (cssStyle.display === 'contents') {
+			return TreeElementKind.deferToChildren;
+		}
+
+		return TreeElementKind.leaf;
+	}
+}
+
+export function createElementSizeMeasurer(root: HTMLElement) {
+	return new MultiChildSizeMeasurer(root);
 }
