@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { mount, unmount, untrack, type Snippet } from 'svelte';
+	import { untrack, type Snippet } from 'svelte';
+	import { mountSnippet } from './mount-snippet.ts';
 	import { useOverlay } from './PortalOverlay.svelte';
-	import SnippetRenderer from './SnippetRenderer.svelte';
 
 	interface Props {
 		modal?: boolean;
@@ -19,14 +19,13 @@
 	let usedDestination = $derived(destination ?? overlay.destination);
 
 	$effect(() => {
-		const destination = usedDestination;
-		const mountedComponent = mount(SnippetRenderer, {
-			props: { snippet: children },
-			target: destination
+		const mountedSnippet = mountSnippet({
+			parent: usedDestination,
+			snippet: children
 		});
 
 		return () => {
-			unmount(mountedComponent, { outro: true });
+			mountedSnippet.unmount();
 		};
 	});
 

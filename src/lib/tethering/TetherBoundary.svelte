@@ -1,3 +1,7 @@
+<!-- @component
+By wrapping a `<TetherBoundary>` around a region of your page, you re-define the limits of
+where nested tethered elements (e.g. tooltips) can go.
+-->
 <script lang="ts" module>
 	import { getContext } from 'svelte';
 
@@ -16,7 +20,7 @@
 <script lang="ts">
 	import { setContext, type Snippet } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { useAnimationFrame } from './animation-frame.svelte.js';
+	import { useAnimationFrame } from '../util/animation-frame.svelte.ts';
 
 	interface Props {
 		ignoreParentBoundary?: boolean;

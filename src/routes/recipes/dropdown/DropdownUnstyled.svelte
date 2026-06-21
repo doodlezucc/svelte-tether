@@ -43,7 +43,7 @@
 
 <svelte:window onmouseup={expanded ? () => (expanded = false) : undefined} />
 
-<Tether origin="bottom-center" inheritWidth wrapVertical>
+<Tether origin="bottom-center" inheritWidth wrapVertical measureAnchor={expanded}>
 	<div
 		role="combobox"
 		aria-controls={popupId}

@@ -1,8 +1,8 @@
 <script lang="ts">
 	import CodeBlock from '$docs/CodeBlock.svelte';
 	import Heading from '$docs/layout/Heading.svelte';
-	import { useAnimationFrame } from '$lib/animation-frame.svelte.js';
-	import { Tether, TetherBoundary } from 'svelte-tether';
+	import { useAnimationFrame } from '$lib/util/animation-frame.svelte.js';
+	import { tether, TetherBoundary } from 'svelte-tether';
 	import { Spring } from 'svelte/motion';
 
 	interface Point {
@@ -83,19 +83,20 @@
 		<div class="boundary">
 			<span class="boundary-header">{'<TetherBoundary>'}</span>
 
-			<Tether origin="top-left">
-				{#snippet portal()}
-					<span>top-left</span>
-				{/snippet}
+			<div
+				class="content"
+				{style}
+				{@attach tether(topLeft, { origin: 'top-left' })}
+				{@attach tether(bottomRight, { origin: 'bottom-right' })}
+			></div>
 
-				<Tether origin="bottom-right">
-					{#snippet portal()}
-						<span>bottom-right</span>
-					{/snippet}
+			{#snippet topLeft()}
+				<span>top-left</span>
+			{/snippet}
 
-					<div class="content" {style}></div>
-				</Tether>
-			</Tether>
+			{#snippet bottomRight()}
+				<span>bottom-right</span>
+			{/snippet}
 		</div>
 	</TetherBoundary>
 </div>

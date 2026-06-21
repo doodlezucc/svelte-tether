@@ -43,7 +43,7 @@
 
 <svelte:window onmouseup={expanded ? () => (expanded = false) : undefined} />
 
-<Tether origin="bottom-center" inheritWidth wrapVertical>
+<Tether origin="bottom-center" inheritWidth wrapVertical measureAnchor={expanded}>
 	{#snippet children({ isMirroredVertically })}
 		<div
 			class:wrap-to-top={isMirroredVertically}
@@ -139,7 +139,7 @@
 		max-height: 200px;
 		overflow: auto;
 
-		transition: 0.1s;
+		transition: opacity 0.1s;
 
 		&[aria-hidden='true'] {
 			pointer-events: none;
