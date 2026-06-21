@@ -1,6 +1,6 @@
 import { mount, unmount, untrack, type Snippet } from 'svelte';
 import type { Attachment } from 'svelte/attachments';
-import { useAnimationFrame } from '../util/animation-frame.svelte.ts';
+import { useAnimationFrameConditional } from '../util/animation-frame.svelte.ts';
 import { createElementSizeMeasurer } from '../util/measure-element-size.ts';
 import type { CommonTetherOptions, TetherState } from './common-types.ts';
 import PositionedPortal from './PositionedPortal.svelte';
@@ -32,7 +32,8 @@ export function tether(
 		inheritWidth = false,
 		inheritHeight = false,
 		wrapHorizontal = false,
-		wrapVertical = false
+		wrapVertical = false,
+		measureAnchor = true
 	}: TetherAttachmentOptions
 ): Attachment<Element> {
 	return (element) => {
@@ -47,14 +48,17 @@ export function tether(
 		let anchor = $state<DOMRect>(elementSizeMeasurer.measureRect());
 		let boundary = $state<DOMRect | undefined>(initialBoundary);
 
-		useAnimationFrame(() => {
-			anchor = elementSizeMeasurer.measureRect();
+		useAnimationFrameConditional(
+			() => measureAnchor,
+			() => {
+				anchor = elementSizeMeasurer.measureRect();
 
-			const overlayRect = tetherBoundary?.getRect();
-			if (overlayRect) {
-				boundary = overlayRect;
+				const overlayRect = tetherBoundary?.getRect();
+				if (overlayRect) {
+					boundary = overlayRect;
+				}
 			}
-		});
+		);
 
 		const layout = $derived(
 			computeTetherLayout({

@@ -1,5 +1,8 @@
 export { default as BaseTetherTooltip } from './patterns/BaseTetherTooltip.svelte';
-export type { BaseTetherTooltipState } from './patterns/BaseTetherTooltip.svelte';
+export type {
+	BaseTetherTooltipFocusState,
+	BaseTetherTooltipState
+} from './patterns/BaseTetherTooltip.svelte';
 export { mountSnippet } from './portaling/mount-snippet.ts';
 export { default as Portal } from './portaling/Portal.svelte';
 export { default as PortalOverlay } from './portaling/PortalOverlay.svelte';
