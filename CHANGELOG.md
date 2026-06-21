@@ -1,4 +1,4 @@
-### Unreleased
+### Preview 0.4.0 (2026-06-21)
 
 - **Breaking!** - Raised the `svelte` peer dependency version to `^5.29.0`, which introduced [attachments](https://svelte.dev/docs/svelte/@attach).
 - **Breaking!** - Removed the read-only `wrappedElement` property from the `<Tether>` and `<BaseTetherToolip>` component in favor of attachments.
