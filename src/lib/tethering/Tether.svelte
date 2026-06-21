@@ -1,32 +1,33 @@
-<script lang="ts" module>
-	export type SizeInheritMode = boolean | 'constrain';
-</script>
+<!-- @component
 
+A wrapper component, allowing the elements inside to use the `portal()` snippet as a floating popover.
+
+```svelte
+	<Tether origin="top-center">
+		{#snippet portal()}
+			<i>Tether.</i>
+		{/snippet}
+
+		<span>Sample text.</span>
+	</Tether>
+```
+-->
 <script lang="ts">
 	import { type Snippet } from 'svelte';
-	import Portal from '../portaling/Portal.svelte';
 	import { useAnimationFrame } from '../util/animation-frame.svelte.ts';
 	import {
 		createElementSizeMeasurer,
 		type ElementSizeMeasurer
 	} from '../util/measure-element-size.ts';
+	import PositionedTetherPortal from './PositionedPortal.svelte';
 	import { useTetherBoundary } from './TetherBoundary.svelte';
-	import { computeTetherLayout, type Alignment, type TetherState } from './tether-layout.ts';
+	import type { CommonTetherOptions, TetherState } from './common-types.ts';
+	import { computeTetherLayout } from './tether-layout.ts';
 
-	export interface TetherProps {
-		origin: Alignment;
-		direction?: Alignment;
-		inheritWidth?: SizeInheritMode;
-		inheritHeight?: SizeInheritMode;
-
-		/** If enabled, the horizontal alignment of the portal will be mirrored when there's not enough space. */
-		wrapHorizontal?: boolean;
-		/** If enabled, the vertical alignment of the portal will be mirrored when there's not enough space. */
-		wrapVertical?: boolean;
-
+	export type TetherProps = CommonTetherOptions & {
 		portal: Snippet<[state: TetherState]>;
 		children: Snippet<[state: TetherState]>;
-	}
+	};
 
 	let {
 		origin,
@@ -59,8 +60,8 @@
 		}
 	});
 
-	let childWidth = $state(0);
-	let childHeight = $state(0);
+	let portalWidth = $state(0);
+	let portalHeight = $state(0);
 
 	const layout = $derived(
 		rect
@@ -70,8 +71,8 @@
 					wrapHorizontal,
 					wrapVertical,
 					boundary,
-					portalWidth: childWidth,
-					portalHeight: childHeight,
+					portalWidth,
+					portalHeight,
 					anchor: rect
 				})
 			: undefined
@@ -100,46 +101,23 @@
 	{@render children(tetherState)}
 </div>
 
-{#if referenceWrapper}
-	<Portal>
-		<div
-			class="popover"
-			data-inherit-width={inheritWidth || undefined}
-			data-inherit-height={inheritHeight || undefined}
-			bind:clientWidth={childWidth}
-			bind:clientHeight={childHeight}
-			style:--x="{layout?.portalX ?? 0}px"
-			style:--y="{layout?.portalY ?? 0}px"
-			style:--w={rect ? `${rect.width}px` : undefined}
-			style:--h={rect ? `${rect.height}px` : undefined}
-		>
-			{@render portal(tetherState)}
-		</div>
-	</Portal>
+{#if referenceWrapper && rect && layout}
+	<PositionedTetherPortal
+		{inheritWidth}
+		{inheritHeight}
+		anchorWidth={rect.width}
+		anchorHeight={rect.height}
+		{layout}
+		snippet={portal}
+		onPortalMeasured={(width, height) => {
+			portalWidth = width;
+			portalHeight = height;
+		}}
+	/>
 {/if}
 
 <style>
 	:global([data-tether]) {
 		display: contents;
-	}
-
-	.popover {
-		position: absolute;
-		display: grid;
-		transform: translate(var(--x), var(--y));
-
-		&[data-inherit-width='true'] {
-			width: var(--w);
-		}
-		&[data-inherit-width='constrain'] {
-			max-width: var(--w);
-		}
-
-		&[data-inherit-height='true'] {
-			height: var(--h);
-		}
-		&[data-inherit-height='constrain'] {
-			max-height: var(--h);
-		}
 	}
 </style>

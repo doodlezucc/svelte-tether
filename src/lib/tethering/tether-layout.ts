@@ -1,3 +1,5 @@
+import type { TetherState } from './common-types.ts';
+
 export type Alignment = keyof typeof ALIGNMENT_MAPPING;
 
 const TOP = 0;
@@ -18,11 +20,6 @@ const ALIGNMENT_MAPPING = {
 	'bottom-right': [RIGHT, BOTTOM]
 } satisfies Record<string, [number, number]>;
 
-export interface TetherState {
-	isMirroredHorizontally: boolean;
-	isMirroredVertically: boolean;
-}
-
 interface ComputeTetherLayoutOptions {
 	origin: Alignment;
 	direction: Alignment;
@@ -37,7 +34,7 @@ interface ComputeTetherLayoutOptions {
 	portalHeight: number;
 }
 
-interface TetherLayout {
+export interface TetherLayout {
 	portalX: number;
 	portalY: number;
 	state: TetherState;

@@ -3,6 +3,7 @@
 - **Breaking!** - Raised the `svelte` peer dependency version to `^5.29.0`, which introduced [attachments](https://svelte.dev/docs/svelte/@attach).
 - **Breaking!** - Removed the read-only `wrappedElement` property from the `<Tether>` and `<BaseTetherToolip>` component in favor of attachments.
 - Added functionality to allow _multi-child tethering_. Previously, it was only required to have exactly one child element in a `<Tether>`.
+- Added the _`tether(...)` attachment_, which can be used via `{@attach tether(...)}` on elements/components directly.
 
 ### Preview 0.3.0 (2026-06-11)
 

@@ -138,24 +138,24 @@ class SparseTreeObserverImpl implements SparseTreeObserver {
 
 	private collectDescendants(
 		collector: CachedTree,
-		parent: Element = this.configuration.root
+		element: Element = this.configuration.root
 	): void {
-		for (const child of parent.children) {
-			const elementKind = this.configuration.filterElement(child);
+		const elementKind = this.configuration.filterElement(element);
 
-			switch (elementKind) {
-				case TreeElementKind.leaf:
-					collector.leafs.add(child);
-					break;
+		switch (elementKind) {
+			case TreeElementKind.leaf:
+				collector.leafs.add(element);
+				break;
 
-				case TreeElementKind.deadLeaf:
-					collector.deadLeafs.add(child);
-					break;
+			case TreeElementKind.deadLeaf:
+				collector.deadLeafs.add(element);
+				break;
 
-				case TreeElementKind.deferToChildren:
+			case TreeElementKind.deferToChildren:
+				for (const child of element.children) {
 					this.collectDescendants(collector, child);
-					break;
-			}
+				}
+				break;
 		}
 	}
 }
