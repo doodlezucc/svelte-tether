@@ -54,6 +54,21 @@ export interface CommonTetherOptions {
 	 * @default false
 	 */
 	wrapVertical?: boolean;
+
+	/**
+	 * Whether to enable the observation of changes to the anchor's size.
+	 *
+	 * If the rendered `portal` snippet is only visible sometimes, it's recommended to set this
+	 * to `false` while the portal is invisible.
+	 *
+	 * Measuring the anchor's position and size is done with `getBoundingClientRect()` calls
+	 * on every frame. If there are a lot of tethered components on the page at the same time,
+	 * this process can have a bad performance impact. While `measureAnchor` is `false`,
+	 * frame-by-frame computations are skipped for this tether.
+	 *
+	 * @default true
+	 */
+	measureAnchor?: boolean;
 }
 
 export interface TetherState {

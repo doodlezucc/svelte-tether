@@ -14,7 +14,7 @@ A wrapper component, allowing the elements inside to use the `portal()` snippet 
 -->
 <script lang="ts">
 	import { type Snippet } from 'svelte';
-	import { useAnimationFrame } from '../util/animation-frame.svelte.ts';
+	import { useAnimationFrameConditional } from '../util/animation-frame.svelte.ts';
 	import {
 		createElementSizeMeasurer,
 		type ElementSizeMeasurer
@@ -36,6 +36,7 @@ A wrapper component, allowing the elements inside to use the `portal()` snippet 
 		inheritHeight = false,
 		wrapHorizontal = false,
 		wrapVertical = false,
+		measureAnchor = true,
 		portal,
 		children,
 		...attachments
@@ -49,16 +50,19 @@ A wrapper component, allowing the elements inside to use the `portal()` snippet 
 
 	let elementSizeMeasurer: ElementSizeMeasurer | undefined;
 
-	useAnimationFrame(() => {
-		if (elementSizeMeasurer) {
-			rect = elementSizeMeasurer.measureRect();
-		}
+	useAnimationFrameConditional(
+		() => measureAnchor,
+		() => {
+			if (elementSizeMeasurer) {
+				rect = elementSizeMeasurer.measureRect();
+			}
 
-		const overlayRect = tetherBoundary?.getRect();
-		if (overlayRect) {
-			boundary = overlayRect;
+			const overlayRect = tetherBoundary?.getRect();
+			if (overlayRect) {
+				boundary = overlayRect;
+			}
 		}
-	});
+	);
 
 	let portalWidth = $state(0);
 	let portalHeight = $state(0);
@@ -101,13 +105,13 @@ A wrapper component, allowing the elements inside to use the `portal()` snippet 
 	{@render children(tetherState)}
 </div>
 
-{#if referenceWrapper && rect && layout}
+{#if referenceWrapper}
 	<PositionedTetherPortal
 		{inheritWidth}
 		{inheritHeight}
-		anchorWidth={rect.width}
-		anchorHeight={rect.height}
-		{layout}
+		anchorWidth={rect?.width ?? 0}
+		anchorHeight={rect?.height ?? 0}
+		layout={layout ?? { portalX: 0, portalY: 0, state: tetherState }}
 		snippet={portal}
 		onPortalMeasured={(width, height) => {
 			portalWidth = width;

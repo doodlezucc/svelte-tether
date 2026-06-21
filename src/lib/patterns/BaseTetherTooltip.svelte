@@ -1,13 +1,16 @@
 <script lang="ts" module>
 	import type { TetherState } from '../tethering/common-types.ts';
 
-	interface TooltipState {
-		tooltipId: string;
+	export interface BaseTetherTooltipFocusState {
 		isHovered: boolean;
 		isFocused: boolean;
 	}
 
-	export type BaseTetherTooltipState = TooltipState & {
+	type CommonTooltipState = BaseTetherTooltipFocusState & {
+		tooltipId: string;
+	};
+
+	export type BaseTetherTooltipState = CommonTooltipState & {
 		tetherState: TetherState;
 	};
 </script>
@@ -19,12 +22,25 @@
 	import Tether from '../tethering/Tether.svelte';
 	import { createMutationObserverAttachment } from '../util/observer-attachment.svelte.ts';
 
-	type Props = Omit<TetherProps, 'children' | 'portal'> & {
+	type Props = Omit<TetherProps, 'children' | 'portal' | 'measureAnchor'> & {
+		/**
+		 * A predicate for whether to enable the observation of changes to the anchor's size.
+		 *
+		 * Because frame-by-frame measuring of the wrapped anchor can have a negative impact on
+		 * performance, it's recommended for tethered tooltips to only compute their layout while
+		 * visible.
+		 *
+		 * @default
+		 * ```ts
+		 * (state) => state.isHovered || state.isFocused
+		 * ```
+		 */
+		measureAnchorWhile?: (state: BaseTetherTooltipFocusState) => boolean;
 		children: Snippet<[state: BaseTetherTooltipState]>;
 		tooltip: Snippet<[state: BaseTetherTooltipState]>;
 	};
 
-	let { children: wrappedChildren, tooltip, ...tetherProps }: Props = $props();
+	let { children: wrappedChildren, measureAnchorWhile, tooltip, ...tetherProps }: Props = $props();
 
 	let tooltipId = $props.id();
 	let isHovered = $state(false);
@@ -78,14 +94,19 @@
 		});
 	}
 
-	let tooltipState = $derived<TooltipState>({
-		tooltipId,
-		isHovered,
-		isFocused
+	let measureAnchor = $derived.by(() => {
+		if (measureAnchorWhile) {
+			return measureAnchorWhile({ isHovered, isFocused });
+		} else {
+			// Default predicate
+			return isHovered || isFocused;
+		}
 	});
+
+	let tooltipState = $derived<CommonTooltipState>({ tooltipId, isHovered, isFocused });
 </script>
 
-<Tether {...tetherProps} {@attach createEventListenersAttachment()}>
+<Tether {...tetherProps} {measureAnchor} {@attach createEventListenersAttachment()}>
 	{#snippet children(state)}
 		{@render wrappedChildren({ ...tooltipState, tetherState: state })}
 	{/snippet}
