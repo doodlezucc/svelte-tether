@@ -3,7 +3,8 @@ export type { BaseTetherTooltipState } from './patterns/BaseTetherTooltip.svelte
 export { mountSnippet } from './portaling/mount-snippet.ts';
 export { default as Portal } from './portaling/Portal.svelte';
 export { default as PortalOverlay } from './portaling/PortalOverlay.svelte';
+export { tether } from './tethering/tether-attachment.svelte.ts';
+export type { SizeInheritMode, TetherOptions } from './tethering/tether-attachment.svelte.ts';
 export type { Alignment, TetherState } from './tethering/tether-layout.ts';
 export { default as Tether } from './tethering/Tether.svelte';
-export type { SizeInheritMode } from './tethering/Tether.svelte';
 export { default as TetherBoundary } from './tethering/TetherBoundary.svelte';

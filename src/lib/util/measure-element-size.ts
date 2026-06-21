@@ -70,6 +70,6 @@ class MultiChildSizeMeasurer implements ElementSizeMeasurer {
 	}
 }
 
-export function createElementSizeMeasurer(root: HTMLElement) {
+export function createElementSizeMeasurer(root: Element) {
 	return new MultiChildSizeMeasurer(root);
 }

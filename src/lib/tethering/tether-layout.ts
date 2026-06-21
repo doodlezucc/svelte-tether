@@ -37,7 +37,7 @@ interface ComputeTetherLayoutOptions {
 	portalHeight: number;
 }
 
-interface TetherLayout {
+export interface TetherLayout {
 	portalX: number;
 	portalY: number;
 	state: TetherState;
