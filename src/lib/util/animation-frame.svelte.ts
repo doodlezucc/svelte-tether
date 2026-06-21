@@ -1,4 +1,4 @@
-import { onMount } from 'svelte';
+import { untrack } from 'svelte';
 
 type TickListener = () => void;
 
@@ -14,17 +14,29 @@ function tick() {
 	}
 }
 
-export function useAnimationFrame(onTick: () => void) {
-	onMount(() => {
-		onTick();
-		listeners.add(onTick);
+export function useAnimationFrame(onTick: TickListener) {
+	useAnimationFrameConditional(() => true, onTick);
+}
 
-		if (animationFrameRequest === undefined) {
-			animationFrameRequest = requestAnimationFrame(tick);
+export function useAnimationFrameConditional(condition: () => boolean, onTick: TickListener) {
+	$effect(() => {
+		// Lazy initialization because requestAnimationFrame(...)
+		// is only available on the browser/client-side.
+		animationFrameRequest ??= requestAnimationFrame(tick);
+	});
+
+	$effect(() => {
+		if (condition()) {
+			return untrack(() => {
+				onTick();
+				listeners.add(onTick);
+
+				animationFrameRequest ??= requestAnimationFrame(tick);
+
+				return () => {
+					listeners.delete(onTick);
+				};
+			});
 		}
-
-		return () => {
-			listeners.delete(onTick);
-		};
 	});
 }
