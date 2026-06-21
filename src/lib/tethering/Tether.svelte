@@ -21,10 +21,10 @@ A wrapper component, allowing the elements inside to use the `portal()` snippet 
 	} from '../util/measure-element-size.ts';
 	import PositionedTetherPortal from './PositionedPortal.svelte';
 	import { useTetherBoundary } from './TetherBoundary.svelte';
-	import type { TetherOptions } from './tether-attachment.svelte.ts';
-	import { computeTetherLayout, type TetherState } from './tether-layout.ts';
+	import type { CommonTetherOptions, TetherState } from './common-types.ts';
+	import { computeTetherLayout } from './tether-layout.ts';
 
-	export type TetherProps = TetherOptions & {
+	export type TetherProps = CommonTetherOptions & {
 		portal: Snippet<[state: TetherState]>;
 		children: Snippet<[state: TetherState]>;
 	};

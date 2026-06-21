@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { untrack, type Snippet } from 'svelte';
 	import Portal from '../portaling/Portal.svelte';
-	import type { SizeInheritMode } from './tether-attachment.svelte.ts';
-	import type { TetherLayout, TetherState } from './tether-layout.ts';
+	import type { SizeInheritMode, TetherState } from './common-types.ts';
+	import type { TetherLayout } from './tether-layout.ts';
 
 	interface Props {
 		inheritWidth: SizeInheritMode;
