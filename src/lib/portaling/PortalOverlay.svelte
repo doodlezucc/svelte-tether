@@ -75,7 +75,7 @@
 		pointer-events: none;
 	}
 
-	.overlay > :global(*) {
+	:where(.overlay > :global(*)) {
 		pointer-events: all;
 	}
 </style>

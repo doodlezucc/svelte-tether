@@ -71,6 +71,7 @@
 
 <style>
 	.popover {
+		pointer-events: none;
 		position: absolute;
 		display: grid;
 		transform: translate(var(--x), var(--y));
@@ -88,5 +89,9 @@
 		&[data-inherit-height='constrain'] {
 			max-height: var(--h);
 		}
+	}
+
+	:where(.popover > :global(*)) {
+		pointer-events: all;
 	}
 </style>
