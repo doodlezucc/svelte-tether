@@ -1,3 +1,7 @@
+<!-- @component
+By wrapping a `<TetherBoundary>` around a region of your page, you re-define the limits of
+where nested tethered elements (e.g. tooltips) can go.
+-->
 <script lang="ts" module>
 	import { getContext } from 'svelte';
 

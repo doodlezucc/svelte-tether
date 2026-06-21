@@ -83,6 +83,13 @@
 		<div class="boundary">
 			<span class="boundary-header">{'<TetherBoundary>'}</span>
 
+			<div
+				class="content"
+				{style}
+				{@attach tether(topLeft, { origin: 'top-left' })}
+				{@attach tether(bottomRight, { origin: 'bottom-right' })}
+			></div>
+
 			{#snippet topLeft()}
 				<span>top-left</span>
 			{/snippet}
@@ -90,13 +97,6 @@
 			{#snippet bottomRight()}
 				<span>bottom-right</span>
 			{/snippet}
-
-			<div
-				class="content"
-				{style}
-				{@attach tether(topLeft, { origin: 'top-left' })}
-				{@attach tether(bottomRight, { origin: 'bottom-right' })}
-			></div>
 		</div>
 	</TetherBoundary>
 </div>

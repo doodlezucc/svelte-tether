@@ -1,3 +1,17 @@
+<!-- @component
+
+A wrapper component, allowing the elements inside to use the `portal()` snippet as a floating popover.
+
+```svelte
+	<Tether origin="top-center">
+		{#snippet portal()}
+			<i>Tether.</i>
+		{/snippet}
+
+		<span>Sample text.</span>
+	</Tether>
+```
+-->
 <script lang="ts">
 	import { type Snippet } from 'svelte';
 	import { useAnimationFrame } from '../util/animation-frame.svelte.ts';
