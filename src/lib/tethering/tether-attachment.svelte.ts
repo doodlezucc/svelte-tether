@@ -26,17 +26,20 @@ export type TetherAttachmentOptions = CommonTetherOptions;
  */
 export function tether(
 	portal: Snippet<[state: TetherState]>,
-	{
-		origin,
-		direction = origin,
-		inheritWidth = false,
-		inheritHeight = false,
-		wrapHorizontal = false,
-		wrapVertical = false,
-		measureAnchor = true
-	}: TetherAttachmentOptions
+	options: TetherAttachmentOptions
 ): Attachment<Element> {
 	return (element) => {
+		const {
+			origin,
+			inheritWidth = false,
+			inheritHeight = false,
+			wrapHorizontal = false,
+			wrapVertical = false,
+			measureAnchor = true
+		} = $derived(options);
+
+		const direction = $derived(options.direction ?? origin);
+
 		const tetherBoundary = useTetherBoundary();
 		const initialBoundary = untrack(() => tetherBoundary?.getRect());
 
@@ -76,8 +79,12 @@ export function tether(
 		const mountedPortalComponent = mount(PositionedPortal, {
 			target: document.body, // This is probably not used, but the "target" option is required.
 			props: {
-				inheritWidth,
-				inheritHeight,
+				get inheritWidth() {
+					return inheritWidth;
+				},
+				get inheritHeight() {
+					return inheritHeight;
+				},
 				get anchorWidth() {
 					return anchor.width;
 				},
