@@ -2,6 +2,7 @@
 	import CodeBlock from '$docs/CodeBlock.svelte';
 	import Heading from '$docs/layout/Heading.svelte';
 	import { useAnimationFrame } from '$lib/util/animation-frame.svelte.js';
+	import { tick, untrack } from 'svelte';
 	import { tether, TetherBoundary } from 'svelte-tether';
 	import { Spring } from 'svelte/motion';
 
@@ -27,7 +28,7 @@
 
 	// This is used to enable/disable the square's frame-by-frame client rect measuring.
 	// It also fixes the measuring happening BEFORE Svelte's frame-by-frame spring iterations.
-	let isSpringSettled = $state(true);
+	let isMeasuringActive = $state(true);
 
 	$effect(() => {
 		if (outerBoundaryWidth && outerBoundaryHeight) {
@@ -36,11 +37,12 @@
 				y: relativeOffset.y * outerBoundaryHeight
 			};
 
-			isSpringSettled = false;
-			offset
-				.set(absoluteOffset, { instant: isInitial })
-				.then(() => (isSpringSettled = true))
-				.catch(() => {});
+			isMeasuringActive = false;
+			offset.set(absoluteOffset, { instant: isInitial });
+
+			untrack(() => {
+				tick().then(() => (isMeasuringActive = true));
+			});
 		}
 	});
 
@@ -100,13 +102,13 @@
 				{@attach tether(topLeft, {
 					origin: 'top-left',
 					get measureAnchor() {
-						return !isSpringSettled;
+						return isMeasuringActive;
 					}
 				})}
 				{@attach tether(bottomRight, {
 					origin: 'bottom-right',
 					get measureAnchor() {
-						return !isSpringSettled;
+						return isMeasuringActive;
 					}
 				})}
 			></div>
