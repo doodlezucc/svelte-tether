@@ -1,4 +1,4 @@
-### Unreleased
+### Preview 0.4.1 (2026-06-26)
 
 - Fixed `tether(...)` attachment excessively re-running when parameters change.
 - Replaced global long lived `requestAnimationFrame` loop with separately scheduled loops per tether.
