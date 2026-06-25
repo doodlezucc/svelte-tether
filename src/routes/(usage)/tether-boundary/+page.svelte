@@ -19,17 +19,28 @@
 
 	let relativeOffset = $state<Point>({ x: 0.5, y: 0.5 });
 
-	const offset = new Spring<Point>({ x: -1, y: -1 }, {});
+	const offset = new Spring<Point>({ x: -1, y: -1 });
 	let isInitial = $derived(offset.target.x < 0);
 
+	const outerBoundaryWidth = $derived(outerBoundaryRect?.width);
+	const outerBoundaryHeight = $derived(outerBoundaryRect?.height);
+
+	// This is used to enable/disable the square's frame-by-frame client rect measuring.
+	// It also fixes the measuring happening BEFORE Svelte's frame-by-frame spring iterations.
+	let isSpringSettled = $state(true);
+
 	$effect(() => {
-		if (outerBoundaryRect) {
+		if (outerBoundaryWidth && outerBoundaryHeight) {
 			const absoluteOffset: Point = {
-				x: relativeOffset.x * outerBoundaryRect.width,
-				y: relativeOffset.y * outerBoundaryRect.height
+				x: relativeOffset.x * outerBoundaryWidth,
+				y: relativeOffset.y * outerBoundaryHeight
 			};
 
-			offset.set(absoluteOffset, { instant: isInitial });
+			isSpringSettled = false;
+			offset
+				.set(absoluteOffset, { instant: isInitial })
+				.then(() => (isSpringSettled = true))
+				.catch(() => {});
 		}
 	});
 
@@ -86,8 +97,18 @@
 			<div
 				class="content"
 				{style}
-				{@attach tether(topLeft, { origin: 'top-left' })}
-				{@attach tether(bottomRight, { origin: 'bottom-right' })}
+				{@attach tether(topLeft, {
+					origin: 'top-left',
+					get measureAnchor() {
+						return !isSpringSettled;
+					}
+				})}
+				{@attach tether(bottomRight, {
+					origin: 'bottom-right',
+					get measureAnchor() {
+						return !isSpringSettled;
+					}
+				})}
 			></div>
 
 			{#snippet topLeft()}

@@ -1,3 +1,8 @@
+### Preview 0.4.1 (2026-06-26)
+
+- Fixed `tether(...)` attachment excessively re-running when parameters change.
+- Replaced global long lived `requestAnimationFrame` loop with separately scheduled loops per tether.
+
 ### Preview 0.4.0 (2026-06-21)
 
 - **Breaking!** - Raised the `svelte` peer dependency version to `^5.29.0`, which introduced [attachments](https://svelte.dev/docs/svelte/@attach).
